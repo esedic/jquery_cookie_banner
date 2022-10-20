@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Cookie</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.15.10/dist/css/uikit.min.css">
+	<style>
+		.cookie-banner {
+			top: inherit;
+			left: inherit;
+			background: transparent;
+		}
+		.uk-modal {
+			background: #eadbd4;
+			padding: 20px;
+		}
+		.uk-modal-dialog {
+			width: 480px;
+			background: #eadbd4;
+		}
+		.uk-modal-title {
+			font-size: 1.5rem;
+		}
+	</style>
+</head>
+<body>
+	<section class="uk-section uk-height-1-1">
+		<div class="uk-container uk-container-small">
+			<div class="uk-margin">
+				<button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #cookie-banner">Toggle Cookie Banner</button>
+			</div>
+
+			<div class="uk-position-bottom-right cookie-banner" id="cookie-banner" uk-modal>
+				<div class="uk-modal-dialog">
+					<h3 class="uk-modal-title">Ta spletna stran uporablja piškotke</h3>
+					<p>Nekateri piškotki so obvezni za delovanje strani, nekateri piškoti pa nam pomagajo zagotavljati  boljšo uporabniško izkušnjo prek vpogleda, kako uporabniki uporabljajo spletno stran. <a href="https://lassana.si/piskotki">Več o uporabi piškotkov na lassana.si</a></p>
+					<div class="uk-margin" id="cookie-options" style="display: none;">
+						<label><input type="checkbox" id="essential" checked disabled> Essential</label>
+						<label><input type="checkbox" id="marketing"> Marketing</label>
+						<label><input type="checkbox" id="analytics"> Analytics</label>
+					</div>
+					<div>
+						<button id="btn-save-cookie" class="uk-button uk-button-primary uk-modal-close" type="button">Sprejmi</button>
+						<button id="btn-adjust-cookies" class="uk-button uk-button-default" type="button">Prilagodi</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.15.10/dist/js/uikit.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.15.10/dist/js/uikit-icons.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+	<script>
+
+		const essentialCheck = jQuery('#essential');
+		const marketingCheck = jQuery('#marketing');
+		const analyticsCheck = jQuery('#analytics');
+		const saveBtn = jQuery('#btn-save-cookie');
+		const adjBtn = jQuery('#btn-adjust-cookies');
+		const clsBtn = jQuery('.uk-modal-close');
+		const cookieBnr = jQuery('#cookie-banner');
+		const opts = jQuery('#cookie-options');
+		let checkbox = jQuery('.input[type="checkbox"]');
+
+		jQuery(document).ready(function($) {
+
+			if(Cookies.get('essential') === undefined) {
+				Cookies.set('essential', '1', { expires: 120 });
+			}
+			if(Cookies.get('marketing') !== undefined) {
+				marketingCheck.prop('checked');
+			}
+			if(Cookies.get('analytics') !== undefined) {
+				analyticsCheck.prop('checked');
+			}
+
+			clsBtn.on('click', function(e) {
+				if((marketingCheck.prop('checked')) || (analyticsCheck.prop('checked'))) {
+					Cookies.set('hidenotice', '1', { expires: 120 });
+				} else {
+					Cookies.set('hidenotice', '0');
+				}
+				if(marketingCheck.prop('checked')) {
+					Cookies.set('marketing', '1', { expires: 120 });
+					console.log('marketing cookie set');
+				} 
+				if(analyticsCheck.prop('checked')) {
+					Cookies.set('analytics', '1', { expires: 120 });
+					console.log('analytics cookie set');
+				}
+
+			});
+
+			adjBtn.on('click', function(e) {
+				opts.slideToggle();
+			});
+
+			// Essential cookie is always set, so we start with 1 instead of 0
+			for ( let i = 1; i < checkbox.length; i++ ) {
+				checkbox[i].addEventListener( "change", () => {
+					if ( checkbox[i].prop('checked') ) {
+						Cookies.set(checkbox[i].id, '1', { expires: 120 });
+					} else {
+						Cookies.remove(checkbox[i].id);
+					}
+				});
+			}
+		})
+
+		window.onload = (event) => {
+			if(Cookies.get('hidenotice') != '1' ) {
+				UIkit.modal(cookieBnr).show();
+			}
+		};
+
+</script>
+</body>
+</html>
